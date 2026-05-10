@@ -1,24 +1,36 @@
 function MyArray(...items) {
-    this.items = items;
+    this.length = 0;
+
+    for (let i = 0; i < items.length; i++) {
+        this[i] = items[i];
+        this.length++;
+    }
 }
 
 MyArray.prototype.push = function () {
-    for (let i = 0; i < arguments.length; i++)
-        this.items[this.items.length] = arguments[i];
-    return this.items.length;
+    for (let i = 0; i < arguments.length; i++) {
+        this[this.length] = arguments[i];
+        this.length++;
+    }
+    return this.length;
 }
 
 MyArray.prototype.flat = function (depth = 1) {
-    if (depth <= 0) return this.items;
+    if (depth <= 0) return this;
     const arr = new MyArray();
 
-    for (let i = 0; i < this.items.length; i++) {
-        if (this.items[i] instanceof MyArray)
-            arr.push(...this.items[i].flat(depth - 1))
+    for (let i = 0; i < this.length; i++) {
+        if (this[i] instanceof MyArray) {
+            const nested = this[i].flat(depth - 1);
+
+            for (let j = 0; j < nested.length; j++) {
+                arr.push(nested[j]);
+            }
+        }
         else
-            arr.push(this.items[i]);
+            arr.push(this[i]);
     }
-    return arr.items;
+    return arr;
 }
 
 const arr = new MyArray(1, 2, 3, new MyArray(3, 4, 5, new MyArray(6, 7, 8, new MyArray(9, 0, "d"))));
